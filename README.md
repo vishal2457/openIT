@@ -15,8 +15,8 @@ The goal is to make issue execution consistent, auditable, and fast.
 
 ## Available Skills (One-Line Each)
 
-- `init-architect`: Builds a project `ARCHITECTURE.md` map and supporting architecture reference docs for downstream agents.
-- `architect-agent`: Template Architect Agent skill populated by `init-architect` with project-specific technical analysis context.
+- `init-architect`: Manually initializes or refreshes architecture artifacts under `skills/architect-agent/`.
+- `architect-agent`: Reads `skills/architect-agent/ARCHITECTURE.md` and related docs to create a `technical-details` subtask.
 - `qa-agent`: Creates a Linear `qa-plan` subtask with ticket-native test cases from functional and technical requirements.
 - `planning-agent`: Converts approved technical details into implementation-only subtasks and parent issue story points.
 - `implementation-agent`: Implements `implement` subtasks in sequence, updates Linear status/tags, and records build/lint outcomes.
@@ -26,13 +26,15 @@ The goal is to make issue execution consistent, auditable, and fast.
 
 ## Typical Workflow
 
-1. `init-architect` (project onboarding or major architecture drift)
-2. `qa-agent`
-3. `planning-agent`
-4. `implementation-agent`
-5. `pr-publish-agent`
-6. `pr-review-agent`
-7. `issue-summary-agent`
+1. Install skills in the target repository.
+2. Run `init-architect` manually (project onboarding or major architecture drift).
+3. Run `architect-agent` per issue to create `technical-details`.
+4. `qa-agent`
+5. `planning-agent`
+6. `implementation-agent`
+7. `pr-publish-agent`
+8. `pr-review-agent`
+9. `issue-summary-agent`
 
 ## How To Use These Skills
 
@@ -45,16 +47,20 @@ The goal is to make issue execution consistent, auditable, and fast.
 
 ```text
 openIT/
-  config.md
+  orchestra-config.json
   skills/
     <skill-name>/
       SKILL.md
+    architect-agent/
+      SKILL.md
+      ARCHITECTURE.md
+      docs/
   README.md
 ```
 
 ## Notes
 
-- These skills read `config.md` for runtime tracker selection (`linear` or `jira`).
+- These skills read `orchestra-config.json` for runtime tracker selection (`linear` or `jira`).
 - If the configured tracker MCP is unavailable, the skill must stop and not proceed with tracker operations.
 - Each skill carries a `version` and stamps `Skill-Version: <skill-name>@<version>` in tracker artifacts for traceability.
 - Some skills also expect Git and GitHub CLI (`gh`) access for branch/PR operations.

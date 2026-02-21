@@ -12,9 +12,9 @@ Turn ticket requirements into a concrete, ticket-native QA test case set before 
 
 ## Runtime Configuration
 
-- Load `config.md` before starting.
+- Read `/orchestra-config.json` from the repository root before starting.
 - Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
-- Use the MCP mapped to `issue_tracker` in `config.md`.
+- Use the MCP mapped to `issue_tracker` in `orchestra-config.json`.
 - If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
 - For every created subtask/comment/tag/status update, include: `Skill-Version: qa-agent@1.0.0`.
 
@@ -42,7 +42,7 @@ Turn ticket requirements into a concrete, ticket-native QA test case set before 
 
 ## Procedure
 
-1. Load `config.md`, set the issue tracker context, and verify the configured tracker MCP is available.
+1. Read `/orchestra-config.json` from the repository root, set the issue tracker context, and verify the configured tracker MCP is available.
 2. Read the parent issue only (description, acceptance criteria, comments, labels, linked requirement notes).
 3. Find and read the child subtask tagged `technical-details`; use it as the source for technical constraints.
 4. Translate ticket requirements into explicit testable behaviors.

@@ -12,9 +12,9 @@ Run a focused PR review that checks only implemented changes against ticket cont
 
 ## Runtime Configuration
 
-- Load `config.md` before starting.
+- Read `/orchestra-config.json` from the repository root before starting.
 - Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
-- Use the MCP mapped to `issue_tracker` in `config.md`.
+- Use the MCP mapped to `issue_tracker` in `orchestra-config.json`.
 - If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
 - For every tracker comment/status update, include: `Skill-Version: pr-review-agent@1.1.0`.
 
@@ -44,7 +44,7 @@ Run a focused PR review that checks only implemented changes against ticket cont
 
 ## Procedure
 
-1. Load `config.md`, set tracker context, and verify the configured issue tracker MCP is available.
+1. Read `/orchestra-config.json` from the repository root, set tracker context, and verify the configured issue tracker MCP is available.
 2. Fetch from the issue:
    - issue summary
    - acceptance criteria

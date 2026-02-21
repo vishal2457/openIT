@@ -12,9 +12,9 @@ Prepare implementation-only subtasks in the configured issue tracker so the impl
 
 ## Runtime Configuration
 
-- Load `config.md` before starting.
+- Read `/orchestra-config.json` from the repository root before starting.
 - Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
-- Use the MCP mapped to `issue_tracker` in `config.md`.
+- Use the MCP mapped to `issue_tracker` in `orchestra-config.json`.
 - If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
 - For every created subtask/comment/tag/status update, include: `Skill-Version: planning-agent@1.0.0`.
 
@@ -49,7 +49,7 @@ Prepare implementation-only subtasks in the configured issue tracker so the impl
 
 ## Procedure
 
-1. Load `config.md`, set the issue tracker context, and verify the configured tracker MCP is available.
+1. Read `/orchestra-config.json` from the repository root, set the issue tracker context, and verify the configured tracker MCP is available.
 2. Validate prerequisites on the parent issue: status `TODO`, tag `qa-plan-created`, and existence of child tasks tagged `technical-details` and `qa-plan`.
 3. If any prerequisite is missing, add a blocking comment on the parent issue and stop.
 4. Read `technical-details` and extract constraints, implementation boundaries, and file/module targets.

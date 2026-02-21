@@ -12,9 +12,9 @@ Publish implementation work by pushing the branch, opening a PR linked to the co
 
 ## Runtime Configuration
 
-- Load `config.md` before starting.
+- Read `/orchestra-config.json` from the repository root before starting.
 - Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
-- Use the MCP mapped to `issue_tracker` in `config.md`.
+- Use the MCP mapped to `issue_tracker` in `orchestra-config.json`.
 - If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
 - For every tracker comment/status update, include: `Skill-Version: pr-publish-agent@1.0.0`.
 - Immediatly stop here if gh cli is not available.
@@ -40,7 +40,7 @@ Publish implementation work by pushing the branch, opening a PR linked to the co
 
 ## Procedure
 
-1. Load `config.md`, set the issue tracker context, and verify the configured tracker MCP is available.
+1. Read `/orchestra-config.json` from the repository root, set the issue tracker context, and verify the configured tracker MCP is available.
 2. Confirm there are committed changes on the current branch.
 3. Push the current branch to origin.
 4. Create a PR targeting the repository base branch.

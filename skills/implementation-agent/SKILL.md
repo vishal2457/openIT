@@ -12,9 +12,9 @@ Implement the parent issue by executing planned implementation subtasks one by o
 
 ## Runtime Configuration
 
-- Load `config.md` before starting.
+- Read `/orchestra-config.json` from the repository root before starting.
 - Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
-- Use the MCP mapped to `issue_tracker` in `config.md`.
+- Use the MCP mapped to `issue_tracker` in `orchestra-config.json`.
 - If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
 - For every task/comment/status update written to the tracker, include: `Skill-Version: implementation-agent@1.0.0`.
 
@@ -43,7 +43,7 @@ Implement the parent issue by executing planned implementation subtasks one by o
 
 ## Procedure
 
-1. Load `config.md`, set the issue tracker context, and verify the configured tracker MCP is available.
+1. Read `/orchestra-config.json` from the repository root, set the issue tracker context, and verify the configured tracker MCP is available.
 2. Validate prerequisites: parent issue status is `In-progress` and parent has `planning-done` tag.
 3. If prerequisites fail, add a blocking comment on the parent issue and stop.
 4. Create a new git branch named `<issue-id>-<short-description>`.
