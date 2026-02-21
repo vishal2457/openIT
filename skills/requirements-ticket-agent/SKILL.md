@@ -19,13 +19,18 @@ Convert a user request into a clean, tracker-ready ticket by gathering missing d
 ## Required Inputs
 
 - User's initial request (raw problem statement)
+- Access to the configured issue tracker MCP
+
+## Runtime Configuration
+
+- Read `/orchestra-config.json` from the repository root before starting.
+- Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
+- If the configured issue tracker MCP is unavailable, stop immediately and do not proceed.
 
 ## Outputs
 
-- One finalized ticket draft containing:
-- `Title`
-- `Body`
-- `Acceptance Criteria`
+- One created issue in the configured tracker.
+- One issue URL returned to the user.
 
 ## Procedure
 
@@ -58,6 +63,8 @@ Acceptance Criteria:
 
 7. Ensure acceptance criteria are specific, testable, and unambiguous.
 8. Present the draft and ask for explicit confirmation or edits.
+9. After confirmation, create the issue in the configured issue tracker with the finalized `Title`, `Body`, and `Acceptance Criteria`.
+10. Return only the created issue link to the user.
 
 ## Clarifying Question Set
 
@@ -78,6 +85,8 @@ Ask only what is needed. Prefer short, high-signal questions.
 - Do not propose technical solutions unless the user explicitly asks.
 - Do not invent requirements; mark unknowns and ask.
 - Do not finalize the ticket until critical ambiguities are resolved.
+- Do not echo the full finalized ticket after issue creation.
+- Return only the issue URL after creating the ticket.
 - Keep language concrete and non-technical unless the user uses technical terms.
 
 ## Handoff
