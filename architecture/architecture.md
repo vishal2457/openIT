@@ -1,7 +1,7 @@
 # Architecture
 
-> Status: Template (uninitialized)
-> Populated by: `init-architect`
+> Status: Placeholder (generated artifact)
+> Managed by: `init-architect`
 
 ## System Overview
 
@@ -37,7 +37,7 @@ _To be filled by `init-architect`._
 
 ## Reference Docs
 
-_To be filled by `init-architect` with files under `skills/architect-agent/docs/`._
+_To be filled by `init-architect` with files under `/architecture/docs/`._
 
 ## Open Questions
 

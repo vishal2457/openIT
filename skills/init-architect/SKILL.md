@@ -1,14 +1,14 @@
 ---
 name: init-architect
-version: 1.2.0
-description: Initializes and maintains architecture artifacts under skills/architect-agent only by analyzing the codebase and populating ARCHITECTURE.md plus domain docs.
+version: 1.4.0
+description: Initializes and maintains architecture artifacts by analyzing the codebase and populating /architecture/architecture.md plus domain docs while preserving skill templates.
 ---
 
 # Init Architect
 
 ## Purpose
 
-Run once after installing skills (and rerun when architecture drifts) to create or refresh architecture artifacts used by `architect-agent`.
+Run once after installing skills (and rerun when architecture drifts) to create or refresh architecture-folder artifacts used by `architect-agent`.
 
 ## Runtime Configuration
 
@@ -26,40 +26,43 @@ Run once after installing skills (and rerun when architecture drifts) to create 
 ## Required Inputs
 
 - Repository root path
-- Optional existing `skills/architect-agent/ARCHITECTURE.md`
-- Optional existing `skills/architect-agent/docs/*.md`
+- Optional existing `/architecture/architecture.md`
+- Optional existing `/architecture/docs/*.md`
+- Optional existing `skills/init-architect/ARCHITECTURE.md` template
 
 ## Outputs
 
 - `/orchestra-config.json` in repository root (created only if missing)
-- `skills/architect-agent/ARCHITECTURE.md` populated as the architecture index
-- `skills/architect-agent/docs/*.md` populated for complex domains
+- `/architecture/architecture.md` populated as the architecture index
+- `/architecture/docs/*.md` populated for complex domains
 - Optional targeted updates to `skills/architect-agent/SKILL.md` reference tables so runtime guidance matches generated docs
 
 ## Procedure
 
 1. Ensure `/orchestra-config.json` exists and has key `issue_tracker`.
 2. Ensure scaffold exists:
-   - `skills/architect-agent/ARCHITECTURE.md`
-   - `skills/architect-agent/docs/`
-3. If root-level architecture artifacts exist (`ARCHITECTURE.md`, `architecture.md`, `docs/architecture.md`), migrate relevant content into `skills/architect-agent/` and stop updating root-level copies.
-4. Analyze repository structure (do not read every source file):
+   - `skills/init-architect/ARCHITECTURE.md`
+3. Ensure generated artifact paths exist:
+   - `/architecture/architecture.md`
+   - `/architecture/docs/`
+4. If architecture content currently lives under `/ARCHITECTURE.md` or `/docs/`, migrate relevant content into `/architecture/` and stop updating legacy root-level copies.
+5. Analyze repository structure (do not read every source file):
    - stack, entry points, boundaries, data layer, integrations, auth, sensitive areas, conventions
-5. Write/update `skills/architect-agent/ARCHITECTURE.md` as a concise index:
+6. Write/update `/architecture/architecture.md` as a concise index:
    - system overview
    - component map
    - sensitive areas
    - conventions
    - reference docs table
-6. Create/update `skills/architect-agent/docs/*.md` only for domains that need detail beyond the index.
-7. Keep index shallow; move depth to domain docs.
-8. If generated docs change domain/sensitive-area mapping, update relevant sections in `skills/architect-agent/SKILL.md`.
+7. Create/update `/architecture/docs/*.md` only for domains that need detail beyond the index.
+8. Keep index shallow; move depth to domain docs.
+9. If generated docs change domain/sensitive-area mapping, update relevant sections in `skills/architect-agent/SKILL.md`.
 
 ## Guardrails
 
 - This skill owns architecture artifact generation; `architect-agent` must not regenerate architecture docs.
-- Do not create or update `ARCHITECTURE.md`, `architecture.md`, or `docs/` at repository root.
-- Keep all architecture artifacts under `skills/architect-agent/`.
+- Do not overwrite `skills/init-architect/ARCHITECTURE.md` template files.
+- Keep generated architecture artifacts under `/architecture/` (`/architecture/architecture.md`, `/architecture/docs/*.md`).
 - Prefer clarity over coverage; do not scan the full codebase unnecessarily.
 
 ## Handoff

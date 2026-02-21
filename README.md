@@ -17,9 +17,9 @@ The goal is to make issue execution consistent, auditable, and fast.
 
 ## Available Skills (One-Line Each)
 
-- `init-architect`: Manually initializes or refreshes architecture artifacts under `skills/architect-agent/`.
+- `init-architect`: Manually initializes or refreshes architecture artifacts under `architecture/` while preserving templates under `skills/init-architect/`.
 - `requirements-ticket-agent`: Converts informal user requests into structured initial tickets by asking clarifying questions and outputting Title, Body, and Acceptance Criteria.
-- `architect-agent`: Reads `skills/architect-agent/ARCHITECTURE.md` and related docs to create a `technical-details` subtask.
+- `architect-agent`: Reads `architecture/architecture.md` and related `architecture/docs/*.md` files to create a `technical-details` subtask.
 - `qa-agent`: Creates a Linear `qa-plan` subtask with ticket-native test cases from functional and technical requirements.
 - `planning-agent`: Converts approved technical details into implementation-only subtasks and parent issue story points.
 - `implementation-agent`: Implements `implement` subtasks in sequence, updates Linear status/tags, and records build/lint outcomes.
@@ -76,13 +76,17 @@ Migration note: `qa-plan-created` and `implemented` are still accepted as legacy
 ```text
 openIT/
   orchestra-config.json
+  architecture/
+    architecture.md
+    docs/
   skills/
     <skill-name>/
       SKILL.md
+    init-architect/
+      SKILL.md
+      ARCHITECTURE.md (template)
     architect-agent/
       SKILL.md
-      ARCHITECTURE.md
-      docs/
   README.md
 ```
 
