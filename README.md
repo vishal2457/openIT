@@ -17,6 +17,7 @@ The goal is to make issue execution consistent, auditable, and fast.
 ## Available Skills (One-Line Each)
 
 - `init-architect`: Manually initializes or refreshes architecture artifacts under `skills/architect-agent/`.
+- `requirements-ticket-agent`: Converts informal user requests into structured initial tickets by asking clarifying questions and outputting Title, Body, and Acceptance Criteria.
 - `architect-agent`: Reads `skills/architect-agent/ARCHITECTURE.md` and related docs to create a `technical-details` subtask.
 - `qa-agent`: Creates a Linear `qa-plan` subtask with ticket-native test cases from functional and technical requirements.
 - `planning-agent`: Converts approved technical details into implementation-only subtasks and parent issue story points.
@@ -28,14 +29,15 @@ The goal is to make issue execution consistent, auditable, and fast.
 ## Typical Workflow
 
 1. Install skills in the target repository.
-2. Run `init-architect` manually (project onboarding or major architecture drift).
-3. Run `architect-agent` per issue to create `technical-details`.
-4. `qa-agent`
-5. `planning-agent`
-6. `implementation-agent`
-7. `pr-publish-agent`
-8. `pr-review-agent`
-9. `issue-summary-agent`
+2. Use `requirements-ticket-agent` to turn initial requests into structured requirements.
+3. Run `init-architect` manually (project onboarding or major architecture drift).
+4. Run `architect-agent` per issue to create `technical-details`.
+5. `qa-agent`
+6. `planning-agent`
+7. `implementation-agent`
+8. `pr-publish-agent`
+9. `pr-review-agent`
+10. `issue-summary-agent`
 
 ## How To Use These Skills
 
