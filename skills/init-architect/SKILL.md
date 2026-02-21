@@ -1,5 +1,6 @@
 ---
 name: init-architect
+version: 1.0.0
 description: This skill generates a structured `ARCHITECTURE.md` for an existing codebase. It is the **first skill invoked** in the development workflow and its output becomes the reference document that all subsequent agents (Architect, Pre-Implementation, PR Review) consume. The goal is a living document — concise, opinionated, and scoped to what agents actually need. Not a wiki. Not a tutorial. A precise map of the system.
 ---
 
@@ -10,6 +11,14 @@ description: This skill generates a structured `ARCHITECTURE.md` for an existing
 This skill generates a structured `ARCHITECTURE.md` for an existing codebase. It is the **first skill invoked** in the development workflow and its output becomes the reference document that all subsequent agents (Architect, Pre-Implementation, PR Review) consume.
 
 The goal is a living document — concise, opinionated, and scoped to what agents actually need. Not a wiki. Not a tutorial. A precise map of the system.
+
+## Runtime Configuration
+
+- Load `config.md` before starting.
+- Read `issue_tracker` to drive any generated skill behavior for ticket operations.
+- Generated ticket-facing skills must use the MCP mapped to `issue_tracker` in `config.md`.
+- Generated ticket-facing skills must stop immediately when the configured tracker MCP is unavailable.
+- Generated ticket comments/subtasks must include the skill version metadata for traceability.
 
 ---
 
@@ -282,22 +291,31 @@ The generated skill must follow this structure:
 ```markdown
 ---
 name: architect-agent
-description: This skill is used to analyze linear issue refer the current architecture and generate a technical details subtask in the linear issue.
+version: 1.0.0
+description: This skill is used to analyze an issue against the current architecture and generate a technical details subtask in the configured tracker.
 ---
 # Architect Agent — [Project Name]
 
 ## Purpose
 
 Per-ticket skill. Invoked after the Requirement Agent has written the functional
-requirement on a Linear issue. Reads the issue, consults architecture docs, decides
+requirement on a tracker issue. Reads the issue, consults architecture docs, decides
 if decomposition is needed, maps technical impact areas, creates a Technical Details
 subtask, and moves the issue status.
+
+## Runtime Configuration
+
+- Load `config.md` before starting.
+- Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
+- Use the MCP mapped to `issue_tracker` in `config.md`.
+- If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
+- For every created subtask/comment/status update, include: `Skill-Version: architect-agent@1.0.0`.
 
 ---
 
 ## Inputs
 
-- Linear issue ID
+- Parent issue ID
 - `ARCHITECTURE.md`
 - Relevant `docs/arch/*.md` files (listed below — load only what applies to the ticket)
 
@@ -330,9 +348,13 @@ These are the exact paths and patterns the PR Review Agent will also use.]
 
 ## Procedure
 
+### Step 0 — Resolve tracker from config
+
+Read `config.md`, set issue tracker context, and verify the configured tracker MCP is available before any ticket operation.
+
 ### Step 1 — Read the issue
 
-Read the Linear issue: title, description, existing comments, labels.
+Read the issue: title, description, existing comments, labels.
 Extract the core intent before proceeding. Return to it if analysis drifts.
 
 ### Step 2 — Load architecture context
@@ -350,7 +372,7 @@ ship and be validated independently.
 Do not decompose if sub-tasks must ship together, or if the work is contained within
 one domain even across multiple files.
 
-If you decide decomposition is needed, do **not** create child issues in Linear. Instead, 
+If you decide decomposition is needed, do **not** create child issues in the tracker. Instead, 
 add a recommendation to decompose in the Technical Details subtask (Step 5) with the rationale.
 
 Continue to Step 4 regardless of the decomposition decision.
@@ -366,12 +388,13 @@ Identify from the architecture docs:
 
 ### Step 5 — Create Technical Details subtask
 
-Create a subtask on the Linear issue titled **"Technical Details"** with this body:
+Create a subtask on the parent issue titled **"Technical Details"** with this body:
 
 ~~~markdown
 ## Technical Details
 
 > Created by: Architect Agent
+> Skill-Version: architect-agent@1.0.0
 > Refs loaded: [every architecture file consulted in this run]
 
 ### Scope Decision

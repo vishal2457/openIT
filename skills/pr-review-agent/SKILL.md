@@ -1,57 +1,79 @@
 ---
 name: pr-review-agent
-description: Performs quality and risk review of implementation and architecture findings, producing merge guidance and explicit blocking issues.
+version: 1.1.0
+description: Reviews PR changes against issue technical details and acceptance criteria, then posts concise outcomes to PR and issue tracker.
 ---
 
 # PR Review Agent
 
 ## Purpose
 
-Generate a high-signal review focused on correctness, risk, regression potential, and release readiness.
+Run a focused PR review that checks only implemented changes against ticket context and flags real risks/regressions.
+
+## Runtime Configuration
+
+- Load `config.md` before starting.
+- Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
+- Use the MCP mapped to `issue_tracker` in `config.md`.
+- If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
+- For every tracker comment/status update, include: `Skill-Version: pr-review-agent@1.1.0`.
 
 ## When to Invoke
 
-- After post-implementation architecture review
-- Before final issue summary and merge decision
+- When a PR is ready for review and linked to an issue.
 
 ## Required Inputs
 
-- Linear issue ID and linked PR/diff context
-- Final diff / PR changes
-- `QA_PLAN.md`
-- `ARCH_REVIEW.md`
-- `IMPLEMENTATION_LOG.md`
+- Parent issue ID
+- Linked PR and PR diff / changed files
+- Issue summary
+- Acceptance criteria
+- `technical-details` subtask content
 
 ## Outputs
 
-- `PR_REVIEW.md` with:
-- Findings grouped by severity (P0-P3)
-- Blocking vs non-blocking comments
-- Test and validation coverage assessment
-- Merge recommendation (approve/changes requested)
-- Explicit unresolved risks
-- Linear issue update:
-- PR review summary comment with severity-grouped findings
-- Explicit blocking items checklist (if any)
-- Merge recommendation posted as decision note
+- PR comment:
+- Short review summary
+- Findings that require changes (if any), tied to the changed code
+- Issue tracker comment:
+- Short review summary
+- Required changes checklist (if any)
+- Status update:
+- `In Progress` when changes are required
+- `Done` when changes are acceptable
 
 ## Procedure
 
-1. Read prior Linear comments from QA, planning, implementation, and architecture review.
-1. Review for behavioral regressions and broken contracts.
-2. Check whether QA gates were satisfied with evidence.
-3. Validate architecture remediation actions are closed.
-4. Produce actionable, file-linked findings.
-5. Emit clear merge recommendation.
-6. Post structured PR review decision and blockers to Linear.
+1. Load `config.md`, set tracker context, and verify the configured issue tracker MCP is available.
+2. Fetch from the issue:
+   - issue summary
+   - acceptance criteria
+   - `technical-details` subtask
+3. Fetch only the PR changes (diff/changed files). Do not review unchanged files.
+4. Review scope is limited to:
+   - correctness and regression risk in changed code
+   - alignment with `technical-details`
+   - acceptance criteria coverage
+   - pattern consistency with the technical details
+5. Do not over-engineer:
+   - avoid unnecessary optimizations or style-only nits
+   - report only issues that can cause bugs, regressions, broken behavior, or criteria mismatch
+6. Post a short PR comment with:
+   - overall result (`changes required` or `looks good`)
+   - concise findings list (or explicit "no blocking issues found")
+7. Post a short issue tracker comment with the same outcome summary and key findings.
+8. Update issue status:
+   - set to `In Progress` if any required changes exist
+   - set to `Done` if review is clean and acceptance criteria are met
 
 ## Guardrails
 
-- Prioritize correctness and risk over stylistic preference.
-- Avoid duplicate findings already resolved in architecture review.
-- Every blocking callout must include impact rationale.
-- Keep ticket status unresolved in Linear while blocking findings remain open.
+- Use only: PR changes, issue summary, acceptance criteria, and `technical-details`.
+- Do not read the full repository for this review.
+- Prioritize correctness and functional risk over stylistic preferences.
+- Keep findings actionable and tied to specific changed files.
+- Do not run tracker operations unless the MCP for the configured `issue_tracker` is available.
 
 ## Handoff
 
-Primary consumer: `issue-summary-agent` and human reviewer.
+Primary consumer: implementer and issue assignee.

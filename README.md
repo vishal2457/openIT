@@ -1,6 +1,6 @@
 # openIT
 
-`openIT` is a skill pack for Codex-style agents that run a Linear-driven software delivery workflow from planning to PR review and issue closure.
+`openIT` is a skill pack for Codex-style agents that run a ticket-driven software delivery workflow from planning to PR review and issue closure.
 
 ## What This Repo Does
 
@@ -19,7 +19,6 @@ The goal is to make issue execution consistent, auditable, and fast.
 - `qa-agent`: Creates a Linear `qa-plan` subtask with ticket-native test cases from functional and technical requirements.
 - `planning-agent`: Converts approved technical details into implementation-only subtasks and parent issue story points.
 - `implementation-agent`: Implements `implement` subtasks in sequence, updates Linear status/tags, and records build/lint outcomes.
-- `post-implementation-architect-agent`: Reviews implemented changes for architecture conformance, boundary safety, and maintainability risks.
 - `pr-publish-agent`: Pushes the branch, opens a PR linked to the Linear issue, comments the PR URL, and moves issue status to review.
 - `pr-review-agent`: Performs a risk-focused PR review with severity-ranked findings and a merge recommendation.
 - `issue-summary-agent`: Produces the final closure summary with delivered scope, evidence, risks, and follow-up actions.
@@ -30,10 +29,9 @@ The goal is to make issue execution consistent, auditable, and fast.
 2. `qa-agent`
 3. `planning-agent`
 4. `implementation-agent`
-5. `post-implementation-architect-agent`
-6. `pr-publish-agent`
-7. `pr-review-agent`
-8. `issue-summary-agent`
+5. `pr-publish-agent`
+6. `pr-review-agent`
+7. `issue-summary-agent`
 
 ## How To Use These Skills
 
@@ -46,6 +44,7 @@ The goal is to make issue execution consistent, auditable, and fast.
 
 ```text
 openIT/
+  config.md
   skills/
     <skill-name>/
       SKILL.md
@@ -54,6 +53,8 @@ openIT/
 
 ## Notes
 
-- These skills assume Linear is the source of truth for issue state and comments.
+- These skills read `config.md` for runtime tracker selection (`linear` or `jira`).
+- If the configured tracker MCP is unavailable, the skill must stop and not proceed with tracker operations.
+- Each skill carries a `version` and stamps `Skill-Version: <skill-name>@<version>` in tracker artifacts for traceability.
 - Some skills also expect Git and GitHub CLI (`gh`) access for branch/PR operations.
 - If your team process differs, edit each `SKILL.md` guardrail/procedure to match your policy.
