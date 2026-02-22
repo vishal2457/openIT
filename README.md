@@ -1,5 +1,9 @@
 # Open Orchestra
 
+```bash
+npx skills add https://github.com/vishal2457/open-orchestra/tree/main/skills
+```
+
 `Open Orchestra` is a skill pack for agents that run a ticket-driven software delivery workflow from planning to PR review and issue closure.
 
 ## What This Repo Does
