@@ -35,6 +35,45 @@ All tracker-writing skills must leave an explicit audit trail. A run is incomple
 
 If any required section is missing, the skill must add a correction comment and keep the issue in blocked/open-questions state instead of marking the stage done.
 
+## JSON Contract for Audit Trail and Handoff
+
+In addition to readable markdown sections, each agent must emit machine-parseable JSON blocks for deterministic chaining and validation.
+
+`Execution-Trace` JSON contract:
+
+```json
+{
+  "agent": "planning-agent",
+  "skill_version": "planning-agent@1.2.0",
+  "timestamp_utc": "2026-02-22T10:30:00Z",
+  "actions": ["read_parent_issue", "created_implement_subtasks", "estimated_story_points"],
+  "decisions": ["split_api_and_ui_work", "deferred_non_blocking_cleanup"],
+  "blockers": [],
+  "open_questions": [],
+  "references": ["LIN-123", "LIN-456", "src/routes/v1/router.ts"]
+}
+```
+
+`Workflow-Handoff` JSON contract:
+
+```json
+{
+  "from_agent": "planning-agent",
+  "to_agent": "implementation-agent",
+  "status": "ready|blocked",
+  "required_tags": ["planning-done"],
+  "open_question_tags": [],
+  "summary": "Implementation subtasks are created and prioritized.",
+  "artifacts": ["LIN-456", "LIN-457", "LIN-458"],
+  "next_actions": ["implement_subtasks_in_order", "publish_pr_when_complete"]
+}
+```
+
+Required rules:
+- Use valid JSON objects (no comments, no trailing commas).
+- Keep key names stable so downstream agents can parse consistently.
+- If `status` is `blocked`, include at least one `open_question_tags` entry and describe the blocker in `summary`.
+
 ## Available Skills
 
 - `init-architect`: Manually initializes or refreshes architecture artifacts under `architecture/` while preserving templates under `skills/init-architect/`.
@@ -43,10 +82,8 @@ If any required section is missing, the skill must add a correction comment and 
 - `architect-agent`: Reads `architecture/architecture.md` and related `architecture/docs/*.md` files to create a `technical-details` subtask.
 - `qa-agent`: Creates a Linear `qa-plan` subtask with ticket-native test cases from functional and technical requirements.
 - `planning-agent`: Converts approved technical details into implementation-only subtasks and story points the parent issue.
-- `implementation-agent`: Implements `implement` subtasks in sequence, updates Linear status/tags, and records build/lint outcomes.
-- `pr-publish-agent`: Pushes the branch, opens a PR linked to the Linear issue, comments the PR URL, and moves issue status to review.
+- `implementation-agent`: Implements `implement` subtasks in sequence, updates Linear status/tags, records build/lint outcomes, and publishes the PR when implementation is complete.
 - `pr-review-agent`: Performs a risk-focused PR review with severity-ranked findings and a merge recommendation.
-- `issue-summary-agent`: Produces the final closure summary with delivered scope, evidence, risks, and follow-up actions.
 
 ## Typical Workflow
 
@@ -60,9 +97,8 @@ If any required section is missing, the skill must add a correction comment and 
 8. `architect-agent` auto-invokes `qa-agent` unless architecture questions are open.
 9. `qa-agent` auto-invokes `planning-agent` unless QA questions are open.
 10. `planning-agent` auto-invokes `implementation-agent` unless planning questions are open.
-11. `implementation-agent` auto-invokes `pr-publish-agent` unless implementation questions are open.
-12. `pr-publish-agent` auto-invokes `pr-review-agent` unless publish questions are open.
-13. `pr-review-agent` loops back to `implementation-agent` when fixes are required, or completes when review is clean.
+11. `implementation-agent` publishes the PR as part of the same run and auto-invokes `pr-review-agent` unless implementation questions are open.
+12. `pr-review-agent` loops back to `implementation-agent` when fixes are required, or completes when review is clean.
 
 ## Workflow Tag Contract
 
@@ -81,7 +117,6 @@ Parent issue open-question tags (agent-scoped):
 - `open-qa-questions`
 - `open-planning-questions`
 - `open-implementation-questions`
-- `open-pr-publish-questions`
 - `open-pr-review-questions`
 
 Every agent writes a `Workflow-Handoff` comment block and the next agent reads only the previous agent's handoff block for open-question checks.

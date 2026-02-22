@@ -1,14 +1,14 @@
 ---
 name: implementation-agent
-version: 2.0.0
-description: Implements tracker subtasks tagged `implement` with handoff-first context loading, lazy artifact reads, and rework_mode support that consumes only review findings plus affected subtasks.
+version: 2.1.0
+description: Implements tracker subtasks tagged `implement`, publishes/updates the PR, and routes review using handoff-first context loading, lazy artifact reads, and rework_mode support.
 ---
 
 # Implementation Agent
 
 ## Purpose
 
-Implement the parent issue by executing planned implementation subtasks with token-efficient context loading and auditable stage handoff.
+Implement the parent issue by executing planned implementation subtasks and handling PR publication in the same run with token-efficient context loading and auditable stage handoff.
 
 ## Runtime Configuration
 
@@ -16,7 +16,8 @@ Implement the parent issue by executing planned implementation subtasks with tok
 - Read `issue_tracker` and use only the configured tracker MCP for ticket operations.
 - Use the MCP mapped to `issue_tracker` in `orchestra-config.json`.
 - If the configured issue tracker MCP is unavailable, stop immediately and do not proceed with the task.
-- For every task/comment/status update written to the tracker, include: `Skill-Version: implementation-agent@2.0.0`.
+- For every task/comment/status update written to the tracker, include: `Skill-Version: implementation-agent@2.1.0`.
+- Immediately stop if `gh` CLI is unavailable.
 
 ## When to Invoke
 
@@ -38,18 +39,22 @@ Implement the parent issue by executing planned implementation subtasks with tok
 - Each completed subtask marked done in the configured issue tracker.
 - Comment on each incomplete subtask explaining why it was not completed.
 - Build and lint outcomes recorded in the configured issue tracker as command + pass/fail, with short error excerpts only when failing.
+- Branch pushed to remote when work is complete.
+- Pull request created (first pass) or updated (rework pass) and linked to the configured tracker issue.
+- Parent issue status moved to `In review` after successful publish/update.
 - Parent issue tags:
 - `implementation-done` when implementation is complete.
+- `pr-published` when PR is created or updated and linked.
 - `open-implementation-questions` when implementation is blocked.
 - A handoff comment wrapped exactly as:
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON
 {
-  "execution_trace": "Execution-Trace:\nActions:\n1. <action>\n2. <action>\nDecisions:\n- <decision + reason>\nReferences:\n- <source artifact or command>\nAssumptions:\n- <assumption>\nOpen-Questions: none|<question list>\nSkill-Version: implementation-agent@2.0.0",
+  "execution_trace": "Execution-Trace:\nActions:\n1. <action>\n2. <action>\nDecisions:\n- <decision + reason>\nReferences:\n- <source artifact or command>\nAssumptions:\n- <assumption>\nOpen-Questions: none|<question list>\nSkill-Version: implementation-agent@2.1.0",
   "handoff_summary": {
     "from_skill": "implementation-agent",
-    "to_skill": "pr-publish-agent|pr-review-agent",
+    "to_skill": "pr-review-agent",
     "status": "ready|blocked",
     "delta": ["<what changed in this implementation pass>"],
     "key_decisions": [{"decision": "<decision>", "reason": "<reason>"}],
@@ -107,10 +112,14 @@ Implement the parent issue by executing planned implementation subtasks with tok
 - Remove `open-implementation-questions` if present.
 - Add tag `implementation-done`.
 - Optionally keep legacy tag `implemented` during migration windows.
-- Post handoff JSON with `status: ready`.
-13. Routing after success:
-- If linked PR already exists (typical `rework_mode`), set `to_skill: pr-review-agent` and invoke `pr-review-agent` directly.
-- Otherwise set `to_skill: pr-publish-agent` and invoke `pr-publish-agent`.
+- Push branch to origin (`git push -u origin <branch>`).
+- If linked PR already exists (typical `rework_mode`), update the existing PR context/comments.
+- Otherwise create a PR targeting the base branch and include tracker issue ID/URL.
+- Ensure parent issue tag `pr-published` is present.
+- Add concise parent issue comment with PR URL and short review request.
+- Move parent issue status to `In review`.
+- Post handoff JSON with `to_skill: pr-review-agent` and `status: ready`.
+13. Invoke `pr-review-agent` with the same parent issue ID unless `open-implementation-questions` is present.
 
 ## Guardrails
 
@@ -121,7 +130,10 @@ Implement the parent issue by executing planned implementation subtasks with tok
 - Do not run tracker operations unless the MCP for the configured `issue_tracker` is available.
 - Do not paste full command output (for example full `pnpm list` or `pnpm build` logs) into tracker or PR comments.
 - Do not reconstruct state by reading full comment history; use handoff summary first, then lazy-load only required artifacts.
+- Do not create or update a PR if there are no committed changes from this implementation pass.
+- Do not move issue status to `In review` until PR creation/update succeeds.
+- Ensure the PR references the correct tracker issue ID and URL.
 
 ## Handoff
 
-Primary consumers: `pr-publish-agent` for first publish flow, `pr-review-agent` for rework loops.
+Primary consumer: `pr-review-agent` (auto-invoke when unblocked).
