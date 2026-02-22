@@ -15,13 +15,13 @@ Each skill defines:
 
 The goal is to make issue execution consistent, auditable, and fast.
 
-## Available Skills (One-Line Each)
+## Available Skills
 
 - `init-architect`: Manually initializes or refreshes architecture artifacts under `architecture/` while preserving templates under `skills/init-architect/`.
 - `requirements-ticket-agent`: Converts informal user requests into structured initial tickets by asking clarifying questions and outputting Title, Body, and Acceptance Criteria.
 - `architect-agent`: Reads `architecture/architecture.md` and related `architecture/docs/*.md` files to create a `technical-details` subtask.
 - `qa-agent`: Creates a Linear `qa-plan` subtask with ticket-native test cases from functional and technical requirements.
-- `planning-agent`: Converts approved technical details into implementation-only subtasks and parent issue story points.
+- `planning-agent`: Converts approved technical details into implementation-only subtasks and story points the parent issue.
 - `implementation-agent`: Implements `implement` subtasks in sequence, updates Linear status/tags, and records build/lint outcomes.
 - `pr-publish-agent`: Pushes the branch, opens a PR linked to the Linear issue, comments the PR URL, and moves issue status to review.
 - `pr-review-agent`: Performs a risk-focused PR review with severity-ranked findings and a merge recommendation.
