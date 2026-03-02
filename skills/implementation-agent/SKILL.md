@@ -46,7 +46,9 @@ Implement the parent issue by executing planned implementation subtasks and hand
 - `implementation-done` when implementation is complete.
 - `pr-published` when PR is created or updated and linked.
 - `open-implementation-questions` when implementation is blocked.
-- A handoff comment wrapped exactly as:
+- A handoff comment with a meaningful stage heading and wrapped JSON block:
+
+## Handing Off for Implementation
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON

@@ -44,7 +44,9 @@ Turn ticket requirements into a concrete, ticket-native QA test case set before 
 - Parent issue tags:
 - `qa-done` when QA planning is complete.
 - `open-qa-questions` when QA planning is blocked.
-- A handoff comment wrapped exactly as:
+- A handoff comment with a meaningful stage heading and wrapped JSON block:
+
+## Handing Off for QA Planning
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON

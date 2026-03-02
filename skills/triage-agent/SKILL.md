@@ -35,7 +35,9 @@ Classify incoming work into `trivial`, `standard`, or `complex` track and define
 
 ## Outputs
 
-- A compact handoff comment for the next stage, wrapped exactly as:
+- A compact handoff comment for the next stage with a meaningful stage heading and wrapped JSON block:
+
+## Handing Off for Triage
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON

@@ -115,7 +115,7 @@ requirements-ticket-agent  →  triage-agent  →  planning-agent  →  implemen
 3. For net-new requests without a usable parent issue body, run `requirements-ticket-agent` first to create/normalize requirements on the parent issue.
 4. Run `triage-agent` once a parent issue exists to classify execution track and propose routing.
 5. `triage-agent` routes to `requirements-ticket-agent` (if requirements are missing) or directly to `planning-agent` (if requirements are done).
-6. `planning-agent` reads the ticket, inspects the live codebase, posts a technical plan, and creates implementation subtasks.
+6. `planning-agent` reads the ticket, inspects the live codebase, creates a Technical Plan subtask, and creates implementation subtasks.
 7. `qa-agent` runs after planning completes and creates a QA plan subtask. QA is a parallel quality gate — it does not block implementation.
 8. `planning-agent` auto-invokes `implementation-agent` when planning is complete.
 9. `implementation-agent` publishes the PR as part of the same run and auto-invokes `pr-review-agent` unless implementation questions are open.
@@ -148,7 +148,7 @@ Parent issue open-question tags (agent-scoped):
 - `open-implementation-questions`
 - `open-pr-review-questions`
 
-Every agent writes a `Workflow-Handoff` comment block and the next agent reads only the previous agent's handoff block for open-question checks.
+Every agent writes a `Workflow-Handoff` comment block with a stage-specific heading and the next agent reads only the previous agent's handoff block for open-question checks.
 
 > **Migration note:** Tags `architecture-done`, `qa-plan-created`, and `implemented` are still accepted as legacy prerequisites during transition to the new workflow.
 

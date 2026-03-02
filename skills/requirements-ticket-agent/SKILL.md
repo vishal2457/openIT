@@ -45,7 +45,9 @@ Convert a user request into a clean, tracker-ready ticket by gathering missing d
 - Parent issue tags:
 - `requirements-done` when requirements are complete.
 - `open-requirements-questions` when clarification is still required.
-- A handoff comment wrapped exactly as:
+- A handoff comment with a meaningful stage heading and wrapped JSON block:
+
+## Handing Off for Requirements
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON

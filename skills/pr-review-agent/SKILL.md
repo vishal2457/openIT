@@ -45,7 +45,9 @@ Run a focused PR review that starts from changed code, validates only relevant r
 - Parent issue tags:
 - `pr-reviewed` when review is clean.
 - `open-pr-review-questions` when review is blocked by missing context.
-- A handoff comment wrapped exactly as:
+- A handoff comment with a meaningful stage heading and wrapped JSON block:
+
+## Handing Off for PR Review
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON

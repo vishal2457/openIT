@@ -1,14 +1,14 @@
 ---
 name: planning-agent
 version: 0.0.1
-description: Reads ticket requirements, inspects the live codebase, produces a short precise technical plan, and creates implementation subtasks. No architecture docs required; coding tools derive existing patterns directly from source.
+description: Reads ticket requirements, inspects the live codebase, creates a Technical Plan subtask, and creates implementation subtasks. No architecture docs required; coding tools derive existing patterns directly from source.
 ---
 
 # Planning Agent
 
 ## Purpose
 
-Turn a ticket into a concrete, code-grounded technical plan and a set of implementation subtasks. The agent reads the ticket, navigates the actual source files, produces a focused technical summary, and breaks the work into subtasks — all in one pass.
+Turn a ticket into a concrete, code-grounded Technical Plan subtask and a set of implementation subtasks. The agent reads the ticket, navigates the actual source files, produces a focused technical summary, and breaks the work into subtasks — all in one pass.
 
 ## Runtime Configuration
 
@@ -27,7 +27,7 @@ Turn a ticket into a concrete, code-grounded technical plan and a set of impleme
 
 ## Optional User-Provided Context
 
-The user may supply additional files to aid planning. These files take priority during the technical plan step:
+The user may supply additional files to aid planning. These files take priority during the Technical Plan step:
 - An existing `architecture.md` or any architecture document.
 - Component design notes, ADRs, or any reference file the user considers relevant.
 
@@ -41,11 +41,14 @@ Read user-provided files first when available. They do not replace codebase insp
 
 ## Outputs
 
-- A concise **Technical Plan** posted as a comment on the parent issue, covering:
+- One **Technical Plan** subtask created under the parent issue, covering:
   - What exists in the codebase that is relevant (key files, patterns, modules).
   - What needs to change and why.
   - Affected files/modules.
   - Risks and assumptions.
+- Technical Plan subtask lifecycle:
+  - Mark done when there are no open planning questions and no `human-review-required` tag on the parent issue.
+  - Keep open when planning has unresolved questions or parent issue requires human review.
 - Up to 8 implementation subtasks created under the parent issue.
 - Each subtask contains:
   - Objective and scope.
@@ -60,7 +63,9 @@ Read user-provided files first when available. They do not replace codebase insp
 - Parent issue tag `planning-done` after planning is completed.
 - Parent issue tag `open-planning-questions` when planning is blocked.
 - Parent issue status set to `in-progress` after planning is completed.
-- A handoff comment wrapped exactly as:
+- A handoff comment with a meaningful stage heading and wrapped JSON block:
+
+## Handing Off for Planning
 
 <!-- OPEN-ORCHESTRA-HANDOFF -->
 ```JSON
@@ -113,26 +118,29 @@ Read user-provided files first when available. They do not replace codebase insp
    - Identify existing patterns the implementation should follow (naming, structure, conventions).
    - Note files that will need to be created, modified, or extended.
    - Read only what is necessary for the ticket scope; do not scan the entire codebase.
-8. Produce a **Technical Plan** (short and precise — no more than one concise tracker comment):
+8. Produce a **Technical Plan** (short and precise):
    - Summary of what the ticket requires.
    - Relevant existing code (files, patterns, key functions identified).
    - What needs to change and where.
    - Affected modules and blast radius.
    - Risks, open questions, and assumptions.
-9. Post the Technical Plan as a comment on the parent issue in the tracker.
+9. Create a Technical Plan subtask under the parent issue with that plan content (do not post the plan as a parent comment).
 10. Break work into implementation-focused subtasks (target 3–6, hard cap 8). Each subtask must be directly derivable from the live code and ticket scope; do not reference architecture documents that do not exist.
 11. Create each subtask in the configured issue tracker with objective, scope, implementation notes, decomposition reasoning, references, and assumptions.
 12. Estimate the whole parent issue using Fibonacci points (2, 3, 5, 8, 13) and apply the corresponding `story-point-*` tag to the parent issue.
 13. Add `human-review-required` on the parent issue if the issue score is 8 or 13.
-14. If planning is blocked by unresolved questions:
+14. Technical Plan subtask completion rule:
+    - If there are no unresolved planning questions and parent issue does not have `human-review-required`, mark the Technical Plan subtask done.
+    - Otherwise leave the Technical Plan subtask open and add a brief note explaining what is pending.
+15. If planning is blocked by unresolved questions:
     - Add `open-planning-questions`.
     - Post handoff JSON with `status: blocked` and explicit `open_blockers`.
     - Stop and wait for clarifications.
-15. If planning is complete:
+16. If planning is complete:
     - Remove `open-planning-questions` if present.
     - Add tag `planning-done` and set parent issue status to `in-progress`.
     - Post handoff JSON with `status: ready` and no blockers.
-16. Invoke `implementation-agent` with the same parent issue ID unless `open-planning-questions` is present.
+17. Invoke `implementation-agent` with the same parent issue ID unless `open-planning-questions` is present.
 
 ## Story Pointing Rules (Parent Issue Only)
 
@@ -156,7 +164,7 @@ Read user-provided files first when available. They do not replace codebase insp
 - Do not run tracker operations unless the MCP for the configured `issue_tracker` is available.
 - Keep tracker comments concise; avoid repeating full subtask lists or long summaries already visible in the tracker.
 - Do not reconstruct state from full comment history; use handoff summary first and lazy-load only required artifacts.
-- The Technical Plan must stay short and precise — its purpose is to orient the implementation agent, not to be an exhaustive document.
+- The Technical Plan subtask must stay short and precise — its purpose is to orient the implementation agent, not to be an exhaustive document.
 
 ## Handoff
 
