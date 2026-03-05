@@ -4,11 +4,11 @@
 npx skills add https://github.com/vishal2457/open-orchestra/tree/main/skills
 ```
 
-`Open Orchestra` is a skill pack for agents that run a ticket-driven software delivery workflow from requirements to PR review and issue closure.
+`Open Orchestra` is a skill pack for agents that run a ticket-driven software development workflow.
 
 ## What This Repo Does
 
-This repository stores reusable agent skills in `skills/*/SKILL.md`. Our core philosophy is to implement AI agents in a way that mirrors how a real development team works in an agile environment — ticket by ticket, grounded in the actual codebase.
+This repository stores reusable agent skills in `skills/*/SKILL.md`. Our core philosophy is to implement AI agents in a way that mirrors how a real development team works — ticket by ticket, grounded in the actual codebase.
 
 Each skill defines:
 - when it should run
@@ -26,12 +26,14 @@ The goal is to make issue execution consistent, auditable, and fast — without 
 Rather than requiring pre-built architecture snapshots that drift out of date, `planning-agent` reads the ticket requirements, navigates the live codebase using search and file-reading tools (`grep`, `ripgrep`, `find`, `view_file`), and produces a short, precise technical plan grounded in what the code actually looks like right now.
 
 This means:
-- No architecture initialization ritual before every ticket.
 - The coding agent always sees the real, current state of the code.
 - Less maintenance overhead; fewer stale context files confusing the agent.
 - Implementation subtasks reference actual file paths and existing patterns — not guesses from an outdated doc.
+- If required docs can be created for any project specific anti patterns and architecture decisions to tell the agent why it is implemented in a certain way.
 
 **If you want architecture docs:** You can still create or maintain them. Pass them as optional context when invoking `planning-agent`, and the agent will read them alongside the live code. They inform but do not replace codebase inspection.
+
+This workflow is designed to let agents work naturaly relying on their tools and reasoning capabilities. It lets agents rely on code rather then docs to derive existing functionality.
 
 ## Tracker Audit Trail Contract
 
@@ -96,11 +98,6 @@ Required rules:
 - `qa-agent`: Creates a `qa-plan` subtask with ticket-native test cases derived from functional requirements and the implementation subtasks. Runs after planning.
 - `implementation-agent`: Implements `implement` subtasks in sequence, updates tracker status/tags, records build/lint outcomes, and publishes the PR when implementation is complete.
 - `pr-review-agent`: Performs a risk-focused PR review with severity-ranked findings and a merge recommendation.
-
-### Deprecated Skills (Retained for Reference)
-
-- `init-architect`: Previously initialized architecture artifacts under `architecture/`. No longer part of the standard workflow. See deprecation notice in `skills/init-architect/SKILL.md`.
-- `architect-agent`: Previously created a `technical-details` subtask from architecture docs. Replaced by `planning-agent`'s built-in codebase inspection. See deprecation notice in `skills/architect-agent/SKILL.md`.
 
 ## Typical Workflow
 
@@ -182,22 +179,13 @@ openIT/
       SKILL.md
     pr-review-agent/
       SKILL.md
-    init-architect/        # deprecated
-      SKILL.md
-    architect-agent/       # deprecated
-      SKILL.md
   README.md
 ```
 
 ## Notes
 
-- These skills no longer depend on `orchestra-config.json`.
 - If a ticket-scoped run has no ticket reference in context, the skill asks for it and stops until provided.
 - If the required tracker MCP is unavailable, the skill must stop and not proceed with tracker operations.
 - Each skill carries a `version` and stamps `Skill-Version: <skill-name>@<version>` in tracker artifacts for traceability.
 - Some skills also expect Git and GitHub CLI (`gh`) access for branch/PR operations.
 - If your team process differs, edit each `SKILL.md` guardrail/procedure to match your policy.
-
-## Documentation
-
-- Workflow token estimate checkpoints: [`docs/workflow-token-estimates.md`](docs/workflow-token-estimates.md)
